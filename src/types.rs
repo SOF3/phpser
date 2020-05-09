@@ -78,5 +78,5 @@ pub struct Serializable<S> {
 }
 
 /// A reference to another value in the serialized value tree.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, new)]
 pub struct Ref(usize);

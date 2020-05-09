@@ -44,3 +44,7 @@ mod types;
 pub use types::*;
 
 mod parse;
+pub use parse::*;
+
+mod emit;
+pub use emit::*;

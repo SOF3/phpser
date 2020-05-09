@@ -234,4 +234,3 @@ unsafe impl<'de> Str<'de> for Vec<u8> {
         self.get_unchecked(i..j).to_vec()
     }
 }
-

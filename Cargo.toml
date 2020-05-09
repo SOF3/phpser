@@ -13,8 +13,5 @@ description = "PHP serialization format support"
 derive-new = "0.5.8"
 derive_more = "0.99.5"
 getset = "0.1.0"
-serde = {version = "1.0.106", optional = true}
-
 
 [features]
-default = ["serde"]

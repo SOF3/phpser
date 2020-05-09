@@ -2,9 +2,17 @@ use std::str;
 
 use crate::*;
 
-struct Cursor<S> {
+/// A stateful wrapper to make a `Str` a readable `Source`
+pub struct Cursor<S> {
     offset: usize,
     source: S,
+}
+
+impl<'de, S: Str<'de>> Cursor<S> {
+    /// Creates a `Cursor` that reads the whole `Str`
+    pub fn new(source: S) -> Self {
+        Cursor { offset: 0, source }
+    }
 }
 
 impl<'de, S: Str<'de>> Source<'de, S> for Cursor<S> {
@@ -70,7 +78,7 @@ impl<'de, S: Str<'de>> Value<S> {
             b'a' => read_array(source),
             b'O' => read_object(source),
             b'C' => read_ser(source),
-            // b'R' => read_ref(source),
+            b'R' => read_ref(source),
             _ => Err(Error::BadToken(source.offset()).into()),
         }
     }
@@ -207,6 +215,13 @@ fn read_ser<'de, S: Str<'de>>(mut source: impl Source<'de, S>) -> IoResult<Value
     expect_char(&mut source, b'}')?;
 
     Ok(Value::Serializable(Serializable::new(class, data)))
+}
+
+fn read_ref<'de, S: Str<'de>>(mut source: impl Source<'de, S>) -> IoResult<Value<S>> {
+    expect_char(&mut source, b':')?;
+    let index = parse_before::<'_, usize, _, _>(&mut source, b';')?;
+
+    Ok(Value::Reference(Ref::new(index)))
 }
 
 fn expect_char<'de, S: Str<'de>>(mut source: impl Source<'de, S>, char: u8) -> IoResult {
